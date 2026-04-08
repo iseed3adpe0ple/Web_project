@@ -127,6 +127,40 @@
 </ul>
 
 <hr>
+<h2>🛠 Tech Stack</h2>
+<table>
+  <thead>
+    <tr><th>Layer</th><th>Technology</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Frontend</td><td>Angular, TypeScript, CSS Grid/Flexbox</td></tr>
+    <tr><td>Backend</td><td>Django, Django REST Framework</td></tr>
+    <tr><td>Auth</td><td>JWT (SimpleJWT)</td></tr>
+    <tr><td>Database</td><td>SQLite (dev) / PostgreSQL (prod)</td></tr>
+    <tr><td>HTTP</td><td>Angular HttpClient + Interceptors</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>📡 API Endpoints</h2>
+<table>
+  <thead>
+    <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>POST</td><td><code>/auth/register/</code></td><td>Register new user</td></tr>
+    <tr><td>POST</td><td><code>/auth/login/</code></td><td>Login, returns JWT tokens</td></tr>
+    <tr><td>POST</td><td><code>/auth/logout/</code></td><td>Logout</td></tr>
+    <tr><td>GET/POST</td><td><code>/groups/</code></td><td>List or create groups</td></tr>
+    <tr><td>GET/PUT/DELETE</td><td><code>/groups/&lt;id&gt;/</code></td><td>Group detail</td></tr>
+    <tr><td>GET/POST</td><td><code>/groups/&lt;id&gt;/events/</code></td><td>Events in a group</td></tr>
+    <tr><td>GET/PUT/DELETE</td><td><code>/groups/&lt;id&gt;/events/&lt;id&gt;/</code></td><td>Event detail</td></tr>
+    <tr><td>GET/POST</td><td><code>/groups/&lt;id&gt;/polls/</code></td><td>Polls in a group</td></tr>
+    <tr><td>GET/PUT</td><td><code>/invitations/</code></td><td>List or respond to invites</td></tr>
+    <tr><td>GET/PUT</td><td><code>/profile/</code></td><td>View or edit profile</td></tr>
+  </tbody>
+</table>
 
 
 
