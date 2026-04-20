@@ -1,1 +1,126 @@
-<p>group-detail works!</p>
+<div class="page">
+
+  <nav class="navbar">
+    <a class="logo" routerLink="/dashboard">PlanSync</a>
+    <div class="nav-links">
+      <a routerLink="/groups">← Группы</a>
+      <a routerLink="/profile">Профиль</a>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    @if (error) {
+      <div class="error-box">{{ error }}</div>
+    }
+
+    @if (loading) {
+      <p class="loading">Загружаем...</p>
+    } @else if (group) {
+
+      <div class="group-header">
+        <div class="group-avatar">{{ group.name[0] }}</div>
+        <div>
+          <h1>{{ group.name }}</h1>
+          <p>{{ group.description || 'Нет описания' }}</p>
+          <span class="members"> {{ group.members.length }} участников</span>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>События</h2>
+          <button class="btn-primary" (click)="showEventForm = !showEventForm">
+            + Создать событие
+          </button>
+        </div>
+
+        @if (showEventForm) {
+          <div class="form-card">
+            <h3>Новое событие</h3>
+
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" [(ngModel)]="eventTitle" placeholder="Название события" class="input" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Начало</label>
+                <input type="datetime-local" [(ngModel)]="eventStartTime" class="input" />
+              </div>
+              <div class="form-group">
+                <label>Конец</label>
+                <input type="datetime-local" [(ngModel)]="eventEndTime" class="input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Место</label>
+              <input type="text" [(ngModel)]="eventLocation" placeholder="Адрес или место" class="input" />
+            </div>
+
+            <div class="form-group">
+              <label>Описание</label>
+              <input type="text" [(ngModel)]="eventDescription" placeholder="Описание" class="input" />
+            </div>
+
+            <div class="form-group">
+              <label>Тип</label>
+              <select [(ngModel)]="eventType" class="input">
+                <option value="social">Социальное</option>
+                <option value="study">Учёба</option>
+                <option value="work">Работа</option>
+              </select>
+            </div>
+
+            @if (eventError) {
+              <div class="error-box">{{ eventError }}</div>
+            }
+
+            <div class="form-actions">
+              <button class="btn-secondary" (click)="showEventForm = false">Отмена</button>
+              <button class="btn-primary" (click)="createEvent()" [disabled]="eventLoading">
+                {{ eventLoading ? 'Создаём...' : 'Создать' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (events.length === 0) {
+          <div class="empty">
+            <p>Нет событий. Создай первое!</p>
+          </div>
+        } @else {
+          <div class="events-list">
+            @for (event of events; track event.id) {
+              <div class="event-card">
+                <div class="event-left">
+                  <span class="event-type" [class]="getTypeClass(event.event_type)">
+                    {{ getTypeLabel(event.event_type) }}
+                  </span>
+                  <h3>{{ event.title }}</h3>
+                  <p class="event-meta">
+                     {{ event.start_time | date:'dd.MM.yyyy HH:mm' }}
+                    — {{ event.end_time | date:'HH:mm' }}
+                    @if (event.location) {
+                      ·  {{ event.location }}
+                    }
+                  </p>
+                  @if (event.description) {
+                    <p class="event-desc">{{ event.description }}</p>
+                  }
+                </div>
+                <div class="rsvp-buttons">
+                  <button class="rsvp going" (click)="rsvp(event.id, 'going')"> Иду</button>
+                  <button class="rsvp maybe" (click)="rsvp(event.id, 'maybe')"> Может</button>
+                  <button class="rsvp not-going" (click)="rsvp(event.id, 'not_going')"> Не иду</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

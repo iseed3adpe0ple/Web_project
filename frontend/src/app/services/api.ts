@@ -29,10 +29,15 @@ export class ApiService {
   joinGroup(code: string): Observable<Group> {
     return this.http.post<Group>(`${this.base}/groups/join/`, { code });
   }
+  joinGroupById(id: number): Observable<Group> {
+    return this.http.post<Group>(`${this.base}/groups/${id}/join/`, {});
+  }
   getGroups(): Observable<Group[]> {
     return this.http.get<Group[]>(`${this.base}/groups/`);
   }
-  getGroupEvents(groupId: number): Observable<Event[]> {
+  getGroup(id: number): Observable<Group> {
+    return this.http.get<Group>(`${this.base}/groups/${id}/`);
+  }getGroupEvents(groupId: number): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.base}/groups/${groupId}/events/`);
   }
   getInvitations(): Observable<Invitation[]> {
@@ -54,8 +59,18 @@ export class ApiService {
         localStorage.removeItem('refresh');
       })
     );
+  }createEvent(groupId: number, data: {
+    title: string;
+    description: string;
+    location: string;
+    event_type: string;
+    start_time: string;
+    end_time: string;
+  }): Observable<Event> {
+    return this.http.post<Event>(`${this.base}/groups/${groupId}/events/`, data);
+  }rsvpEvent(groupId: number, eventId: number, status: string): Observable<any> {
+    return this.http.post(`${this.base}/groups/${groupId}/events/${eventId}/rsvp/`, { status });
   }
-
   refreshToken(): Observable<{ access: string }> {
     const refresh = localStorage.getItem('refresh');
     return this.http.post<{ access: string }>(`${this.base}/auth/token/refresh/`, { refresh }).pipe(

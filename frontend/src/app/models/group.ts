@@ -1,20 +1,37 @@
+export interface Member {
+  id: number;
+  username: string;
+  email: string;
+}
+
 export interface Group {
   id: number;
   name: string;
   description: string;
-  code: string;
-  members_count: number;
+  owner: Member;
+  members: Member[];
+  invite_code: string;
+  created_at: string;
 }
 
 export interface Event {
   id: number;
   title: string;
-  date: string;
-  time: string;
-  location: string;
   description: string;
-  type: 'study' | 'social' | 'work';
-  group: number;
+  location: string;
+  event_type: 'study' | 'social' | 'work';
+  start_time: string;
+  end_time: string;
+  team: number;
+  created_by: Member;
+  created_at: string;
+}
+
+export interface RSVP {
+  id: number;
+  event: number;
+  user: Member;
+  status: 'going' | 'maybe' | 'not_going';
 }
 
 export interface Invitation {
