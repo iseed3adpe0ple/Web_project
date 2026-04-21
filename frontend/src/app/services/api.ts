@@ -20,11 +20,11 @@ export class ApiService {
   }createGroup(data: { name: string; description: string }): Observable<Group> {
     return this.http.post<Group>(`${this.base}/groups/`, data);
   }acceptInvitation(id: number): Observable<any> {
-    return this.http.post(`${this.base}/invitations/${id}/accept/`, {});
+    return this.http.post(`${this.base}/auth/invitations/${id}/accept/`, {});
   }
 
   declineInvitation(id: number): Observable<any> {
-    return this.http.post(`${this.base}/invitations/${id}/decline/`, {});
+    return this.http.post(`${this.base}/auth/invitations/${id}/decline/`, {});
   }
   joinGroup(code: string): Observable<Group> {
     return this.http.post<Group>(`${this.base}/groups/join/`, { code });
@@ -41,11 +41,11 @@ export class ApiService {
     return this.http.get<Event[]>(`${this.base}/groups/${groupId}/events/`);
   }
   getInvitations(): Observable<Invitation[]> {
-    return this.http.get<Invitation[]>(`${this.base}/invitations/`);
+    return this.http.get<Invitation[]>(`${this.base}/auth/invitations/`);
   }getProfile(): Observable<any> {
-    return this.http.get(`${this.base}/profile/`);
+    return this.http.get(`${this.base}/auth/profile/`);
   }updateProfile(data: { username: string; email: string }): Observable<any> {
-    return this.http.put(`${this.base}/profile/`, data);
+    return this.http.put(`${this.base}/auth/profile/`, data);
   }
   register(data: RegisterRequest): Observable<User> {
     return this.http.post<User>(`${this.base}/auth/register/`, data);
