@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../services/api';
 import { Group, Event } from '../../../models/group';
+import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-group-detail',
@@ -29,12 +30,19 @@ export class GroupDetailComponent implements OnInit {
   eventLoading = false;
   eventError = '';
 
-  constructor(private api: ApiService, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit() {
     this.groupId = Number(this.route.snapshot.paramMap.get('id'));
-    this.loadGroup();
-    this.loadEvents();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadGroup();
+      this.loadEvents();
+    }
   }
 
   loadGroup() {
@@ -42,22 +50,28 @@ export class GroupDetailComponent implements OnInit {
       next: (group) => {
         this.group = group;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.error = 'Не удалось загрузить группу';
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
 
   loadEvents() {
     this.api.getGroupEvents(this.groupId).subscribe({
-      next: (events) => this.events = events,
+      next: (events) => {
+        this.events = events;
+        this.cdr.markForCheck();
+      },
       error: () => {}
     });
   }
 
   createEvent() {
+    if (!isPlatformBrowser(this.platformId)) return;
     if (!this.eventTitle.trim() || !this.eventStartTime || !this.eventEndTime) {
       this.eventError = 'Заполните название, начало и конец события';
       return;
@@ -70,8 +84,9 @@ export class GroupDetailComponent implements OnInit {
       description: this.eventDescription,
       location: this.eventLocation,
       event_type: this.eventType,
-      start_time: this.eventStartTime,
-      end_time: this.eventEndTime,
+      start_time: new Date(this.eventStartTime).toISOString(),
+      end_time: new Date(this.eventEndTime).toISOString(),
+      team: this.groupId,
     }).subscribe({
       next: (event) => {
         this.events.push(event);
@@ -82,10 +97,12 @@ export class GroupDetailComponent implements OnInit {
         this.eventLocation = '';
         this.eventDescription = '';
         this.eventLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.eventError = err.error?.title?.[0] || 'Ошибка при создании события';
         this.eventLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

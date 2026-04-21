@@ -66,6 +66,7 @@ export class ApiService {
     event_type: string;
     start_time: string;
     end_time: string;
+    team: number;
   }): Observable<Event> {
     return this.http.post<Event>(`${this.base}/groups/${groupId}/events/`, data);
   }rsvpEvent(groupId: number, eventId: number, status: string): Observable<any> {
