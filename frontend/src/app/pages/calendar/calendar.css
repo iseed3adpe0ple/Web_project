@@ -1,0 +1,147 @@
+.page {
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+.navbar {
+  background: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #374151;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-links a:hover { color: #4f46e5; }
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  min-width: 200px;
+  text-align: center;
+}
+
+.nav-btn {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-btn:hover { background: #f5f3ff; border-color: #4f46e5; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  background: white;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.day-header {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 0.5rem;
+}
+
+.day-cell {
+  min-height: 90px;
+  border-radius: 8px;
+  padding: 0.4rem;
+  border: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.day-cell.empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.day-cell.today {
+  border-color: #4f46e5;
+  background: #f5f3ff;
+}
+
+.day-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.day-cell.today .day-number {
+  color: #4f46e5;
+}
+
+.event-pill {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.type-study { background: #eff6ff; color: #1d4ed8; }
+.type-social { background: #f0fdf4; color: #16a34a; }
+.type-work { background: #fff7ed; color: #c2410c; }
+
+.error-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem;
+}

@@ -1,0 +1,46 @@
+<div class="page">
+  <nav class="navbar">
+    <a class="logo" routerLink="/dashboard">PlanSync</a>
+    <div class="nav-links">
+      <a routerLink="/dashboard">Главная</a>
+      <a routerLink="/groups">Группы</a>
+      <a routerLink="/invitations">Приглашения</a>
+      <a routerLink="/profile">Профиль</a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="calendar-header">
+      <button class="nav-btn" (click)="prevMonth()">←</button>
+      <h1>{{ monthNames[currentMonth] }} {{ currentYear }}</h1>
+      <button class="nav-btn" (click)="nextMonth()">→</button>
+    </div>
+
+    @if (error) {
+      <div class="error-box">{{ error }}</div>
+    }
+
+    @if (loading) {
+      <p class="loading">Загружаем события...</p>
+    } @else {
+      <div class="calendar-grid">
+        @for (day of dayNames; track day) {
+          <div class="day-header">{{ day }}</div>
+        }
+
+        @for (cell of calendarDays; track $index) {
+          <div class="day-cell" [class.today]="isToday(cell.date)" [class.empty]="!cell.date">
+            @if (cell.date) {
+              <span class="day-number">{{ cell.date.getDate() }}</span>
+              @for (event of cell.events; track event.id) {
+                <div class="event-pill" [class]="getTypeClass(event.event_type)">
+                  {{ event.title }}
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

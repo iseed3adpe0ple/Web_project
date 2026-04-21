@@ -11,6 +11,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent)
   },
   {
+    path: 'calendar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/calendar/calendar').then(m => m.CalendarComponent)
+  },
+  {
      path: 'dashboard',
      loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardComponent)
   },
