@@ -21,12 +21,31 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     created_by = UserShortSerializer(read_only=True)
+    rsvps = serializers.SerializerMethodField()
+    my_rsvp = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
         fields = ['id', 'title', 'description', 'location', 'event_type',
-                  'start_time', 'end_time', 'team', 'created_by', 'created_at']
-        read_only_fields = ['created_at']
+                  'start_time', 'end_time', 'team', 'created_by', 'created_at',
+                  'rsvps', 'my_rsvp']
+        read_only_fields = ['team', 'created_at']
+
+    def get_rsvps(self, obj):
+        return [
+            {
+                'user': UserShortSerializer(r.user).data,
+                'status': r.status,
+            }
+            for r in obj.rsvps.all()
+        ]
+
+    def get_my_rsvp(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return None
+        rsvp = obj.rsvps.filter(user=request.user).first()
+        return rsvp.status if rsvp else None
 
 
 class RSVPSerializer(serializers.ModelSerializer):

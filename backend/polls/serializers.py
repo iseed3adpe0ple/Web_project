@@ -29,4 +29,13 @@ class PollSerializer(serializers.ModelSerializer):
         model = Poll
         fields = ['id', 'title', 'description', 'team', 'created_by',
                   'deadline', 'is_closed', 'options', 'created_at']
-        read_only_fields = ['is_closed', 'created_at']
+        read_only_fields = ['team', 'is_closed', 'created_at']
+
+    def create(self, validated_data):
+        options_data = self.initial_data.get('options', [])
+        poll = Poll.objects.create(**validated_data)
+        for opt in options_data:
+            dt = opt.get('datetime') if isinstance(opt, dict) else None
+            if dt:
+                PollOption.objects.create(poll=poll, datetime=dt)
+        return poll

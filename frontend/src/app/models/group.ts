@@ -14,6 +14,13 @@ export interface Group {
   created_at: string;
 }
 
+export type RsvpStatus = 'going' | 'maybe' | 'not_going';
+
+export interface EventRsvp {
+  user: Member;
+  status: RsvpStatus;
+}
+
 export interface Event {
   id: number;
   title: string;
@@ -25,17 +32,15 @@ export interface Event {
   team: number;
   created_by: Member;
   created_at: string;
-}
-
-export interface RSVP {
-  id: number;
-  event: number;
-  user: Member;
-  status: 'going' | 'maybe' | 'not_going';
+  rsvps: EventRsvp[];
+  my_rsvp: RsvpStatus | null;
 }
 
 export interface Invitation {
   id: number;
   group: Group;
+  invited_user: Member;
+  invited_by: Member;
   status: 'pending' | 'accepted' | 'declined';
+  created_at: string;
 }

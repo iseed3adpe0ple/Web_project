@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api';
 import { Group, Invitation } from '../../models/group';
+import { removeStorageItem } from '../../utils/storage';
 
 @Component({
   selector: 'app-dashboard',
@@ -68,8 +69,8 @@ export class DashboardComponent implements OnInit {
       next: () => this.router.navigate(['/login']),
       error: () => {
 
-        localStorage.removeItem('access');
-        localStorage.removeItem('refresh');
+        removeStorageItem('access');
+        removeStorageItem('refresh');
         this.router.navigate(['/login']);
       }
     });

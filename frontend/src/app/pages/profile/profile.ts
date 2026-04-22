@@ -1,9 +1,8 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api';
-import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
@@ -24,16 +23,10 @@ export class ProfileComponent implements OnInit {
   editError = '';
   editSuccess = false;
 
-  constructor(
-    private api: ApiService,
-    private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private api: ApiService) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadProfile();
-    }
+    this.loadProfile();
   }
 
   loadProfile() {
@@ -43,15 +36,14 @@ export class ProfileComponent implements OnInit {
         this.editUsername = profile.username;
         this.editEmail = profile.email;
         this.loading = false;
-        this.cdr.markForCheck();
       },
       error: () => {
         this.error = 'Не удалось загрузить профиль';
         this.loading = false;
-        this.cdr.markForCheck();
       }
     });
   }
+
 
   saveProfile() {
     this.editLoading = true;
@@ -64,13 +56,11 @@ export class ProfileComponent implements OnInit {
         this.editMode = false;
         this.editLoading = false;
         this.editSuccess = true;
-        this.cdr.markForCheck();
         setTimeout(() => this.editSuccess = false, 3000);
       },
       error: (err) => {
         this.editError = err.error?.username?.[0] || err.error?.email?.[0] || 'Ошибка при сохранении';
         this.editLoading = false;
-        this.cdr.markForCheck();
       }
     });
   }

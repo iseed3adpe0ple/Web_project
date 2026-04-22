@@ -28,8 +28,13 @@ class UserSerializer(serializers.ModelSerializer):
 class InvitationSerializer(serializers.ModelSerializer):
     invited_user = UserSerializer(read_only=True)
     invited_by = UserSerializer(read_only=True)
+    group = serializers.SerializerMethodField()
 
     class Meta:
         model = Invitation
-        fields = ['id', 'team', 'invited_user', 'invited_by', 'status', 'created_at']
+        fields = ['id', 'group', 'invited_user', 'invited_by', 'status', 'created_at']
         read_only_fields = ['created_at']
+
+    def get_group(self, obj):
+        from teams.serializers import TeamSerializer
+        return TeamSerializer(obj.team).data

@@ -1,10 +1,9 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api';
 import { Group } from '../../models/group';
-import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-groups',
@@ -18,28 +17,23 @@ export class GroupsComponent implements OnInit {
   loading = true;
   error = '';
 
+  // Форма создания группы
   showCreateForm = false;
   createName = '';
   createDescription = '';
   createLoading = false;
   createError = '';
 
+  // Форма вступления по коду
   showJoinForm = false;
   joinCode = '';
   joinLoading = false;
   joinError = '';
 
-  constructor(
-    private api: ApiService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadGroups();
-    }
+    this.loadGroups();
   }
 
   loadGroups() {
@@ -48,12 +42,10 @@ export class GroupsComponent implements OnInit {
       next: (groups) => {
         this.groups = groups;
         this.loading = false;
-        this.cdr.markForCheck();
       },
       error: () => {
         this.error = 'Не удалось загрузить группы';
         this.loading = false;
-        this.cdr.markForCheck();
       }
     });
   }
@@ -73,12 +65,10 @@ export class GroupsComponent implements OnInit {
         this.createName = '';
         this.createDescription = '';
         this.createLoading = false;
-        this.cdr.markForCheck();
       },
       error: (err) => {
         this.createError = err.error?.name?.[0] || 'Ошибка при создании группы';
         this.createLoading = false;
-        this.cdr.markForCheck();
       }
     });
   }
@@ -97,12 +87,10 @@ export class GroupsComponent implements OnInit {
         this.showJoinForm = false;
         this.joinCode = '';
         this.joinLoading = false;
-        this.cdr.markForCheck();
       },
       error: (err) => {
         this.joinError = err.error?.detail || 'Неверный код группы';
         this.joinLoading = false;
-        this.cdr.markForCheck();
       }
     });
   }

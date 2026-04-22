@@ -48,23 +48,34 @@ def invitation_list(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def invitation_respond(request, pk):
+def invitation_accept(request, pk):
     try:
         invitation = Invitation.objects.get(pk=pk, invited_user=request.user)
     except Invitation.DoesNotExist:
         return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    action = request.data.get('action')
-    if action == 'accept':
-        invitation.status = 'accepted'
-        invitation.team.members.add(request.user)
-        invitation.save()
-    elif action == 'decline':
-        invitation.status = 'declined'
-        invitation.save()
-    else:
-        return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
+    if invitation.status != 'pending':
+        return Response({'error': 'Already responded'}, status=status.HTTP_400_BAD_REQUEST)
 
+    invitation.status = 'accepted'
+    invitation.team.members.add(request.user)
+    invitation.save()
+    return Response(InvitationSerializer(invitation).data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def invitation_decline(request, pk):
+    try:
+        invitation = Invitation.objects.get(pk=pk, invited_user=request.user)
+    except Invitation.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if invitation.status != 'pending':
+        return Response({'error': 'Already responded'}, status=status.HTTP_400_BAD_REQUEST)
+
+    invitation.status = 'declined'
+    invitation.save()
     return Response(InvitationSerializer(invitation).data)
 
 

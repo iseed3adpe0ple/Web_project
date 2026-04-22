@@ -25,7 +25,34 @@
           <p>{{ group.description || 'Нет описания' }}</p>
           <span class="members"> {{ group.members.length }} участников</span>
         </div>
+        @if (isOwner()) {
+          <button class="btn-secondary invite-btn" (click)="showInviteForm = !showInviteForm">
+            Пригласить участника
+          </button>
+        }
       </div>
+
+      @if (showInviteForm) {
+        <div class="form-card">
+          <h3>Пригласить участника</h3>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" [(ngModel)]="inviteUsername" placeholder="username" class="input" />
+          </div>
+          @if (inviteError) {
+            <div class="error-box">{{ inviteError }}</div>
+          }
+          @if (inviteSuccess) {
+            <div class="success-box">Приглашение отправлено</div>
+          }
+          <div class="form-actions">
+            <button class="btn-secondary" (click)="showInviteForm = false">Отмена</button>
+            <button class="btn-primary" (click)="sendInvite()" [disabled]="inviteLoading">
+              {{ inviteLoading ? 'Отправляем...' : 'Отправить' }}
+            </button>
+          </div>
+        </div>
+      }
 
       <section class="section">
         <div class="section-header">
@@ -110,12 +137,129 @@
                   @if (event.description) {
                     <p class="event-desc">{{ event.description }}</p>
                   }
+
+                  <div class="rsvp-summary">
+                    <span class="rsvp-count going" [title]="rsvpUsers(event, 'going')">
+                      ✅ Идут: {{ rsvpCount(event, 'going') }}
+                    </span>
+                    <span class="rsvp-count maybe" [title]="rsvpUsers(event, 'maybe')">
+                      🤔 Может: {{ rsvpCount(event, 'maybe') }}
+                    </span>
+                    <span class="rsvp-count not-going" [title]="rsvpUsers(event, 'not_going')">
+                      ❌ Не идут: {{ rsvpCount(event, 'not_going') }}
+                    </span>
+                  </div>
                 </div>
                 <div class="rsvp-buttons">
-                  <button class="rsvp going" (click)="rsvp(event.id, 'going')"> Иду</button>
-                  <button class="rsvp maybe" (click)="rsvp(event.id, 'maybe')"> Может</button>
-                  <button class="rsvp not-going" (click)="rsvp(event.id, 'not_going')"> Не иду</button>
+                  <button class="rsvp going" [class.active]="event.my_rsvp === 'going'" (click)="rsvp(event.id, 'going')"> Иду</button>
+                  <button class="rsvp maybe" [class.active]="event.my_rsvp === 'maybe'" (click)="rsvp(event.id, 'maybe')"> Может</button>
+                  <button class="rsvp not-going" [class.active]="event.my_rsvp === 'not_going'" (click)="rsvp(event.id, 'not_going')"> Не иду</button>
                 </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Опросы</h2>
+          <button class="btn-primary" (click)="showPollForm = !showPollForm">
+            + Создать опрос
+          </button>
+        </div>
+
+        @if (showPollForm) {
+          <div class="form-card">
+            <h3>Новый опрос</h3>
+
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" [(ngModel)]="pollTitle" placeholder="Когда встретиться?" class="input" />
+            </div>
+
+            <div class="form-group">
+              <label>Описание</label>
+              <input type="text" [(ngModel)]="pollDescription" placeholder="Необязательно" class="input" />
+            </div>
+
+            <div class="form-group">
+              <label>Дедлайн голосования</label>
+              <input type="datetime-local" [(ngModel)]="pollDeadline" class="input" />
+            </div>
+
+            <div class="form-group">
+              <label>Варианты</label>
+              @for (opt of pollOptions; track $index; let i = $index) {
+                <div class="option-row">
+                  <input type="datetime-local" [(ngModel)]="pollOptions[i]" class="input" />
+                  @if (pollOptions.length > 2) {
+                    <button class="btn-secondary" (click)="removePollOption(i)">✕</button>
+                  }
+                </div>
+              }
+              <button class="btn-secondary" (click)="addPollOption()">+ Вариант</button>
+            </div>
+
+            @if (pollError) {
+              <div class="error-box">{{ pollError }}</div>
+            }
+
+            <div class="form-actions">
+              <button class="btn-secondary" (click)="resetPollForm()">Отмена</button>
+              <button class="btn-primary" (click)="createPoll()" [disabled]="pollLoading">
+                {{ pollLoading ? 'Создаём...' : 'Создать' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (polls.length === 0) {
+          <div class="empty">
+            <p>Нет опросов. Создай первый!</p>
+          </div>
+        } @else {
+          <div class="polls-list">
+            @for (poll of polls; track poll.id) {
+              <div class="poll-card" [class.closed]="poll.is_closed">
+                <div class="poll-header">
+                  <h3>{{ poll.title }}</h3>
+                  <span class="poll-status" [class.open]="!poll.is_closed" [class.closed]="poll.is_closed">
+                    {{ poll.is_closed ? 'Закрыт' : 'Открыт' }}
+                  </span>
+                </div>
+                @if (poll.description) {
+                  <p class="poll-desc">{{ poll.description }}</p>
+                }
+                <p class="poll-deadline">Дедлайн: {{ poll.deadline | date:'dd.MM.yyyy HH:mm' }}</p>
+
+                <div class="poll-options">
+                  @for (opt of poll.options; track opt.id) {
+                    <div class="option-item"
+                         [class.winner]="poll.is_closed && getWinner(poll)?.id === opt.id"
+                         [class.voted]="opt.has_voted">
+                      <div class="option-info">
+                        <span class="option-datetime">{{ opt.datetime | date:'dd.MM.yyyy HH:mm' }}</span>
+                        <span class="option-votes">{{ opt.vote_count }} голосов</span>
+                        @if (poll.is_closed && getWinner(poll)?.id === opt.id) {
+                          <span class="winner-badge">🏆 Победитель</span>
+                        }
+                      </div>
+                      <button class="vote-btn"
+                              [disabled]="poll.is_closed"
+                              [class.voted]="opt.has_voted"
+                              (click)="voteOption(poll, opt)">
+                        {{ opt.has_voted ? '✓ Отменить' : '👍 Голосовать' }}
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                @if (canDeletePoll(poll)) {
+                  <div class="poll-actions">
+                    <button class="btn-danger" (click)="deletePoll(poll.id)">Удалить опрос</button>
+                  </div>
+                }
               </div>
             }
           </div>
