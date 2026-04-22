@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-f3t2-_8#y75^!gv1+b4g_^yhowvju9$^uxw#*$$@f@+465meat
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['lavish-passion-projext.up.railway.app', 'localhost', '127.0.0.1']
+import os
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 
 # Application definition
